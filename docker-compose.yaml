@@ -1,32 +1,69 @@
+# services:
+#   ollama:
+#     volumes:
+#       - ollama:/root/.ollama
+#     container_name: ollama
+#     pull_policy: always
+#     tty: true
+#     restart: unless-stopped
+#     image: ollama/ollama:${OLLAMA_DOCKER_TAG-latest}
+
+#   open-webui:
+#     build:
+#       context: .
+#       dockerfile: Dockerfile
+#     image: ghcr.io/open-webui/open-webui:${WEBUI_DOCKER_TAG-main}
+#     container_name: open-webui
+#     volumes:
+#       - ./backend-data:/app/backend/data
+#       - open-webui:/app/backend/data
+#     depends_on:
+#       - ollama
+#     ports:
+#       - ${OPEN_WEBUI_PORT-3000}:8080
+#     environment:
+#       - OPENAI_API_KEY=sk-ewgiaPC3A6pPDYHwR8siVA
+#       - 'OLLAMA_BASE_URL=http://ollama:11434'
+#       - 'WEBUI_SECRET_KEY=admin123456'
+#     extra_hosts:
+#       - host.docker.internal:host-gateway
+#     restart: unless-stopped
+
+# volumes:
+#   ollama: {}
+#   open-webui: {}
+
 services:
   ollama:
+    image: ollama/ollama:${OLLAMA_DOCKER_TAG-latest}
+    container_name: ollama
     volumes:
       - ollama:/root/.ollama
-    container_name: ollama
     pull_policy: always
     tty: true
     restart: unless-stopped
-    image: ollama/ollama:${OLLAMA_DOCKER_TAG-latest}
 
   open-webui:
     build:
-      context: .
+      context: https://github.com/Inna949Festchuk/open-webui.git#main
       dockerfile: Dockerfile
-    image: ghcr.io/open-webui/open-webui:${WEBUI_DOCKER_TAG-main}
+    # image: ghcr.io/open-webui/open-webui:${WEBUI_DOCKER_TAG-main}  # Закомментируйте
     container_name: open-webui
     volumes:
-      - open-webui:/app/backend/data
+      - ./backend-data:/app/backend/data   # ТОЛЬКО это! Монтируем вашу папку с webui.db
+      # НЕ добавляйте второй volume!
     depends_on:
       - ollama
     ports:
       - ${OPEN_WEBUI_PORT-3000}:8080
     environment:
-      - 'OLLAMA_BASE_URL=http://ollama:11434'
-      - 'WEBUI_SECRET_KEY='
+      - OPENAI_API_KEY=...
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - WEBUI_SECRET_KEY=admin123456
     extra_hosts:
       - host.docker.internal:host-gateway
     restart: unless-stopped
 
 volumes:
   ollama: {}
-  open-webui: {}
+  # НЕ нужно создавать volume для open-webui, так как вы используете локальную папку
