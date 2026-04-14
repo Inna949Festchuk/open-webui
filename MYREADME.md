@@ -117,7 +117,7 @@ docker volume inspect open-webui
 mkdir -p ~/Desktop/open-webui-full-backup
 
 # Скопируйте ВСЁ содержимое тома
-sudo cp -r $(docker volume inspect open-webui --format '{{ .Mountpoint }}')/* ~/Desktop/open-webui-full-backup/
+sudo cp -r $(docker volume inspect open-webui --format '{{ .Mountpoint }}')/. ~/Desktop/open-webui-full-backup/
 
 # Исправьте права для удобства работы
 sudo chown -R $USER:$USER ~/Desktop/open-webui-full-backup/
